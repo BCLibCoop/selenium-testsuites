@@ -1,7 +1,8 @@
-####################################################################################################
-# Selenium Test Suite for dev.bclaconnect.ca created by Harris Mckay for the BC Libraries Coop     #
-# Python unittest used to make test cases. Cases are NOT independant, two rely on the same account.#
-####################################################################################################
+#####################################################################################################
+# Selenium Test Suite for dev.bclaconnect.ca created by Harris Mckay for the BC Libraries Coop      #
+# Python unittest used to make test cases. Cases are NOT independant, two rely on the same account. #
+# The test browser windows (one per account) will be left open so the tester can check emails.      #
+#####################################################################################################
 import unittest
 import configparser
 import time
@@ -72,14 +73,16 @@ class BCLATests(unittest.TestCase):
         # Check the email was sent and received
         self.driver.get("https://www.mailinator.com/inbox2.jsp?public_to=" + BCLATests.individualRandomString + "#/#public_maildirdiv")
         WebDriverWait(self.driver, 30).until(EC.title_contains("Mailinator"))
-        self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'to BCLA')]").click()
-        mailText_present = EC.presence_of_element_located((By.ID, "publicshowmaildivcontent"))
-        WebDriverWait(self.driver, 20).until(mailText_present)
-        src = self.driver.page_source
-        text_found = re.search(mailAddress, src)
-        self.assertNotEqual(text_found, None)
-        #print("Transaction completed succesfully, confirmation email received succesfully at")
-        #print("https://www.mailinator.com/inbox2.jsp?public_to=" + BCLATests.individualRandomString + "#/#public_maildirdiv")
+        print("Mailbox at:")
+        print("https://www.mailinator.com/inbox2.jsp?public_to=" + BCLATests.individualRandomString + "#/#public_maildirdiv")
+        print("Should contain a welcome message and receipt for an individual membership.")
+        self.driver.quit()
+        #self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'Welcome to BCLA')]").click()
+        #mailText_present = EC.presence_of_element_located((By.ID, "publicshowmaildivcontent"))
+        #WebDriverWait(self.driver, 20).until(mailText_present)
+        #src = self.driver.page_source
+        #text_found = re.search(mailAddress, src)
+        #self.assertNotEqual(text_found, None)
 
     def test_donate_as_individual(self):
         # Go to the bcla home page  
@@ -123,7 +126,10 @@ class BCLATests(unittest.TestCase):
         # Check the email was sent and received
         self.driver.get("https://www.mailinator.com/inbox2.jsp?public_to=" + BCLATests.individualRandomString + "#/#public_maildirdiv")
         WebDriverWait(self.driver, 30).until(EC.title_contains("Mailinator"))
-        #self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'to BCLA')]").click()
+        print("Mailbox at:")
+        print("https://www.mailinator.com/inbox2.jsp?public_to=" + BCLATests.individualRandomString + "#/#public_maildirdiv")
+        print("Should contain a receipt for an individual donation.")
+        #self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'Donate to BCLA')]").click()
         #mailText_present = EC.presence_of_element_located((By.ID, "publicshowmaildivcontent"))
         #WebDriverWait(self.driver, 20).until(mailText_present)
         #src = self.driver.page_source
@@ -186,7 +192,9 @@ class BCLATests(unittest.TestCase):
         # Check the email was sent and received
         self.driver.get("https://www.mailinator.com/inbox2.jsp?public_to=" + randomString + "#/#public_maildirdiv")
         WebDriverWait(self.driver, 30).until(EC.title_contains("Mailinator"))
-        self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'to BCLA')]").click()
+        print("Mailbox at:")
+        print("https://www.mailinator.com/inbox2.jsp?public_to=" + randomString + "#/#public_maildirdiv")
+        print("Should contain a welcome message and receipt for an institutional membership.")
 
     def test_donate_as_anonymous(self):
         # Go to the bcla home page  
@@ -195,7 +203,8 @@ class BCLATests(unittest.TestCase):
         # Navigate to donation page and fill in form
         self.driver.find_element_by_xpath("//*[@id='menu-item-2857']/a").click()
         WebDriverWait(self.driver, 10).until(EC.title_contains("Donate to BCLA |"))
-        mailAddress = BCLATests.individualRandomString + '@mailinator.com'
+        randomString = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(5))
+        mailAddress = randomString + '@mailinator.com'
         self.driver.find_element_by_id("email-5").send_keys(mailAddress)
         self.driver.find_element_by_id("price_187").send_keys("12.34")
         self.driver.find_element_by_id("CIVICRM_QFID_BCLA_Awards_and_Scholarships_4").click()
@@ -220,17 +229,20 @@ class BCLATests(unittest.TestCase):
         text_found = re.search(r'Your transaction has been processed successfully. Please print this page for your records.', src)
         self.assertNotEqual(text_found, None)
         # Check the email was sent and received
-        self.driver.get("https://www.mailinator.com/inbox2.jsp?public_to=" + BCLATests.individualRandomString + "#/#public_maildirdiv")
+        self.driver.get("https://www.mailinator.com/inbox2.jsp?public_to=" + randomString + "#/#public_maildirdiv")
         WebDriverWait(self.driver, 30).until(EC.title_contains("Mailinator"))
-        #self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'to BCLA')]").click()
+        print("Mailbox at:")
+        print("https://www.mailinator.com/inbox2.jsp?public_to=" + randomString + "#/#public_maildirdiv")
+        print("Should contain a receipt for an anonymous donation.")
+        #self.driver.find_element_by_xpath("//div[@class='innermail ng-binding'][contains(.,'Donate to BCLA')]").click()
         #mailText_present = EC.presence_of_element_located((By.ID, "publicshowmaildivcontent"))
         #WebDriverWait(self.driver, 20).until(mailText_present)
         #src = self.driver.page_source
         #text_found = re.search(mailAddress, src)
         #self.assertNotEqual(text_found, None)
         
-    def tearDown(self):
-        self.driver.quit()
+#    def tearDown(self):
+#        self.driver.quit()
 
 if __name__ == "__main__":
     unittest.main()
